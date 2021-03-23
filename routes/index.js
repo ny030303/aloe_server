@@ -1,4 +1,8 @@
 var express = require('express');
+const passport = require('passport');
+const bcrypt = require('bcrypt');
+// const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
+
 var router = express.Router();
 
 /* GET home page. */

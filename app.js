@@ -10,7 +10,8 @@ const passport = require('passport');
 dotenv.config();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const { sequelize } = require('./models');
+
+const connect = require('./schemas');
 const passportConfig = require('./passport');
 
 
@@ -19,17 +20,12 @@ var app = express();
 // view engine setup
 passportConfig(); // 패스포트 설정
 app.set('port', process.env.PORT || 54000);
-app.set('view engine', 'html');
-
-sequelize.sync({ force: false })
-.then(() => {
-  console.log('데이터베이스 연결 성공');
-})
-.catch((err) => {
-  console.error(err);
-});
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+connect();
 
 app.use(morgan('dev'));
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -48,10 +44,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-
-
+app.use('/user', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
