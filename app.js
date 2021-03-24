@@ -11,7 +11,7 @@ dotenv.config();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-const connect = require('./schemas');
+const {connect} = require('./models');
 const passportConfig = require('./passport');
 
 
