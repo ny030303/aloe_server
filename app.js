@@ -6,6 +6,8 @@ const session = require('express-session');
 var morgan = require('morgan');
 const dotenv = require('dotenv');
 const passport = require('passport');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
 dotenv.config();
 var indexRouter = require('./routes/index');
@@ -42,6 +44,9 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
