@@ -12,7 +12,7 @@ router.get('/signup', function (req, res, next) {
 });
 
 
-router.post('/signup', async (req, res, next) => {
+router.post('/signup', (req, res, next) => {
   console.log(req.body);
 
   // try {

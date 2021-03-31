@@ -21,6 +21,7 @@ var app = express();
 
 // view engine setup
 passportConfig(); // 패스포트 설정
+
 app.set('port', process.env.PORT || 54000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -28,6 +29,8 @@ connect();
 
 app.use(morgan('dev'));
 
+
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -45,8 +48,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
