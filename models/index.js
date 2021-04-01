@@ -2,10 +2,13 @@ const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config();
 const uri = process.env.ATLAS_URI;
 let client;
+
+const db = {};
 let connect = () => {
     client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     client.connect((err) => {
-    const users = client.db("aloe").collection("user");
+    db.users = client.db("aloe").collection("user");
+    console.log("connected");
     // perform actions on the collection object
     // client.close();
 
@@ -21,4 +24,4 @@ let connect = () => {
     });
 };
 
-module.exports = {connect, client};
+module.exports = {connect, client, db};
