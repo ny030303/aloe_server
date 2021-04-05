@@ -3,30 +3,41 @@ const User = require('../models/user');
 const {db} = require('../models');
 var router = express.Router();
 
-const multer = require('multer')
-const upload = multer({dest: 'images/'});
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: './public/uploads/images',
+  filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + 
+  path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage
+});
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
   res.send('respond with a resource');
 });
 
-router.post('/signup', (req, res, next) => {
+router.post('/signup', async (req, res, next) => {
   // console.log(req.body);
-  db.users.insert({ 
+  
+  await db.users.insert({ 
     id:  req.body.id,
     pwd:  req.body.pwd,
     name: req.body.name,
     profileimg: ''
   }).then(function(results) {
-      console.log('Promise Based Insert Result : ', results);
+      res.status(201).json({result: 1});
   }, function(err) {
-      console.log('== Rejected\n', err);
+      next(err);
   });
 });
 
-router.post('/upload', upload.single('profile_img'),(req,res,next) => {
-    console.log(req.file);
+router.post('/upload', upload.any(),(req,res,next) => {
+    console.log("file: "+req.file);
     res.json(req.file);
 });
 
