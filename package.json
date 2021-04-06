@@ -16,6 +16,7 @@
     "express": "~4.16.1",
     "express-session": "^1.17.1",
     "http-errors": "~1.6.3",
+    "iconv-lite": "^0.6.2",
     "jade": "~1.11.0",
     "mongodb": "^3.6.5",
     "mongoose": "^5.12.2",
@@ -26,5 +27,10 @@
     "passport-local": "^1.0.0",
     "sequelize": "^6.6.2",
     "socket.io": "^4.0.0"
+  },
+  "devDependencies": {
+    "passport-google-oauth20": "^2.0.0",
+    "passport-kakao": "^1.0.1",
+    "passport-naver": "^1.0.6"
   }
 }
