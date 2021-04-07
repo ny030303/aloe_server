@@ -24,13 +24,14 @@ router.get('/', function (req, res, next) {
 
 router.post('/signup', async (req, res, next) => {
   // console.log(req.body);
-
   await db.users.insert({
     id: req.body.id,
     pwd: req.body.pwd,
     name: req.body.name,
-    profileimg: ''
+    profileURL: req.body.profileURL,
+    memo: req.body.memo
   }).then(function (results) {
+    console.log(results);
     res.status(201).json({result: 1});
   }, function (err) {
     next(err);
@@ -38,7 +39,7 @@ router.post('/signup', async (req, res, next) => {
 });
 
 router.post('/upload', (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   let data = req.body.img.split(';');
   let file = Buffer.from(data[1].substr(7), 'base64');
   let fileName = `${Date.now()}.${data[0].split('/').pop()}`;
@@ -46,21 +47,5 @@ router.post('/upload', (req, res, next) => {
   // const uploadedFiles = req.files;
   res.json({'fileName': fileName});
 });
-
-// try {
-//   const user = await User.create({
-//     id: req.body.id,
-//     pwd: req.body.pwd,
-//     name: req.body.name,
-//     birth: req.body.birth,
-//     profileimg: req.body.profileimg,
-//     memo: req.body.memo
-//   });
-//   console.log(user);
-//   res.status(201).json(user);
-// } catch (err) {
-//   console.error(err);
-//   next(err);
-// }
 
 module.exports = router;

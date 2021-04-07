@@ -6,14 +6,14 @@ const KakaoStrategy = require('passport-kakao').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const {db} = require('../models');
 
 const router = express.Router();
 
 const authOpts = {
   local: {
-    usernameField: 'email',
-    passwordField: 'password'
+    usernameField: 'id',
+    passwordField: 'pwd'
   },
   kakao: {
     clientID: '--------------------------',
@@ -40,21 +40,22 @@ function passportLoginByThirdparty(info, done) {
   done(null, info);
 }
 
-passport.use('local', new LocalStrategy(authOpts.local, async (email, password, done) => {
+passport.use('local', new LocalStrategy(authOpts.local, async (id, pwd, done) => {
   try {
-    const exUser = await User.findOne({where: {email}});
-    if (exUser) {
-      const result = await bcrypt.compare(password, exUser.password);
-      if (result) {
-        done(null, exUser);
-      }
-      else {
-        done(null, false, {message: '비밀번호가 일치하지 않습니다.'});
-      }
-    }
-    else {
-      done(null, false, {message: '가입되지 않은 회원입니다.'});
-    }
+    const exUser = await db.users.find({'id': id});
+    console.log(exUser);
+    // if (exUser) {
+    //   const result = await bcrypt.compare(pwd, exUser.pwd);
+    //   if (result) {
+    //     done(null, exUser);
+    //   }
+    //   else {
+    //     done(null, false, {message: '비밀번호가 일치하지 않습니다.'});
+    //   }
+    // }
+    // else {
+    //   done(null, false, {message: '가입되지 않은 회원입니다.'});
+    // }
   } catch (error) {
     console.error(error);
     done(error);
@@ -99,7 +100,7 @@ passport.use('google', new GoogleStrategy(authOpts.google, (accessToken, refresh
   }, done);
 }));
 
-router.get('/local', passport.authenticate('local', authOpts.redirect));
+router.post('/local', passport.authenticate('local', authOpts.redirect));
 
 // naver 로그인 / 콜백 연동
 router.get('/naver', passport.authenticate('naver'));
