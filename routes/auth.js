@@ -42,20 +42,20 @@ function passportLoginByThirdparty(info, done) {
 
 passport.use('local', new LocalStrategy(authOpts.local, async (id, pwd, done) => {
   try {
-    const exUser = await db.users.find({'id': id});
-    console.log(exUser);
-    // if (exUser) {
-    //   const result = await bcrypt.compare(pwd, exUser.pwd);
-    //   if (result) {
-    //     done(null, exUser);
-    //   }
-    //   else {
-    //     done(null, false, {message: '비밀번호가 일치하지 않습니다.'});
-    //   }
-    // }
-    // else {
-    //   done(null, false, {message: '가입되지 않은 회원입니다.'});
-    // }
+    const exUser = await db.users.find({'id': id}).toArray();
+    console.log(exUser.length); // 틀리면 0, 있음 1
+    if (exUser.length > 0) {
+      const result = await bcrypt.compare(pwd, exUser[0].pwd);
+      if (result) {
+        done(null, exUser[0]);
+      }
+      else {
+        done(null, false, {message: '비밀번호가 일치하지 않습니다.'});
+      }
+    }
+    else {
+      done(null, false, {message: '가입되지 않은 회원입니다.'});
+    }
   } catch (error) {
     console.error(error);
     done(error);

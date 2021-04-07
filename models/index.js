@@ -8,6 +8,7 @@ let connect = () => {
     client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     client.connect((err) => {
     db.users = client.db("aloe").collection("user");
+    // db.users.deleteMany();
     console.log("connected");
     // perform actions on the collection object
     // client.close();

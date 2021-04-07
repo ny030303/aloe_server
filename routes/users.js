@@ -3,19 +3,23 @@ const iconv = require('iconv-lite');
 const User = require('../models/user');
 const {db} = require('../models');
 const fs = require('fs');
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 const router = express.Router();
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: './public/uploads/images',
-  filename: function (req, file, cb) {
-    cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.').pop()}`);
-  }
-});
+// const multer = require('multer');
+// const storage = multer.diskStorage({
+//   destination: './public/uploads/images',
+//   filename: function (req, file, cb) {
+//     cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.').pop()}`);
+//   }
+// });
 
-const upload = multer({
-  storage: storage
-});
+// const upload = multer({
+//   storage: storage
+// });
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -24,14 +28,18 @@ router.get('/', function (req, res, next) {
 
 router.post('/signup', async (req, res, next) => {
   // console.log(req.body);
+  let hashPwd;
+  let salt = await bcrypt.genSalt(saltRounds);
+  hashPwd = await bcrypt.hash(req.body.pwd, salt);
+  // console.log(hashPwd);
   await db.users.insert({
     id: req.body.id,
-    pwd: req.body.pwd,
+    pwd: hashPwd,
     name: req.body.name,
     profileURL: req.body.profileURL,
     memo: req.body.memo
   }).then(function (results) {
-    console.log(results);
+    // console.log(results);
     res.status(201).json({result: 1});
   }, function (err) {
     next(err);
