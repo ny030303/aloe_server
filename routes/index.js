@@ -8,7 +8,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  console.log(req.user);
+  // console.log(req.user);
   if(req.user) { // 유저 로그인 중
     res.status(201).json({result: req.user});
   } else {

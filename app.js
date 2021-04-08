@@ -47,7 +47,12 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
+// const cors = require('cors');
+
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 // app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/', indexRouter);
