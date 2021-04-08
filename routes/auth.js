@@ -31,7 +31,8 @@ const authOpts = {
   },
   redirect: {
     successRedirect: '/',
-    failureRedirect: '/auth/login'
+    failureRedirect: '/auth/login',
+    failureFlash: true
   }
 };
 
@@ -101,6 +102,22 @@ passport.use('google', new GoogleStrategy(authOpts.google, (accessToken, refresh
 }));
 
 router.post('/local', passport.authenticate('local', authOpts.redirect));
+
+router.get('/login', function (req, res, next) {
+  let text = req.flash();
+  console.log(text);
+  if(text.error) res.status(201).json({result: text.error[0]});
+  else res.status(201).json({result: "로그인 실패 했습니다."});
+});
+
+// router.get('/logout', (req, res, next) => {
+//   req.logout();
+//   req.session.save((err) => {
+//     if (err) throw err;
+//     res.status(201).json({result: "로그아웃 완료"});
+//     // res.redirect('/');
+//   });
+// });
 
 // naver 로그인 / 콜백 연동
 router.get('/naver', passport.authenticate('naver'));

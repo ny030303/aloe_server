@@ -8,6 +8,8 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
+
 
 dotenv.config();
 const indexRouter = require('./routes/index');
@@ -40,6 +42,8 @@ app.use(session({
     secure: false,
   },
 }));
+app.use(flash());
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -67,6 +71,11 @@ app.use(function(err, req, res, next) {
 });
 
 passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser( (user, done) => done(null, user));
-
+passport.deserializeUser( (user, done) => {
+  done(null, user);
+  // db.users.find({'id': user.id}).then(function(exUser) {
+  //   console.log(exUser);
+  //   // done(err, exUser[0]);
+  // });
+});
 module.exports = app;
