@@ -20,19 +20,19 @@ io.on("connect", socket => {
         // console.log("login check in: ");
         // console.log(userList);
         // console.log(data);
+       console.log(userList);
         let idx = -1;
-        if(userList.length > 0) idx = userList.findIndex(x => x.user_data.id === data.id);
+        if(userList.length > 0 && data.id) idx = userList.findIndex(x => x.user_data.id === data.id);
         if(idx < 0) return;
-
-        userList[idx].socket_id = socket.id;
+        userList.forEach((v, i) => {
+            if(i === idx) v.socket_id = socket.id;
+        });
         socket.emit('login-ok', {socket_id:socket.id, user_data:data});
 
-       console.log(userList);
     });
 
     socket.on('login', data => {
-        let idx = userList.findIndex(x => x.socket_id === socket.id);
-        if(idx > 0) return;
+        // console.log('push');
         userList.push({socket_id:socket.id, user_data:data});
         socket.emit('login-ok', {socket_id:socket.id, user_data:data});
         console.log(userList);
@@ -40,14 +40,16 @@ io.on("connect", socket => {
     });
 
     socket.on('logout', ()=>{
-        console.log("들어옴",  userList);
-        // let idx = userList.findIndex(x => x.socket_id === socket.id);
+        // console.log("들어옴",  userList);
+        let idx = userList.findIndex(x => x.socket_id === socket.id);
         // console.log("idx: ", idx, " list[]: ", userList[idx]);
-        // if(idx < 0) return;
+        if(idx < 0) return;
         
-        // let user = userList.splice(idx, 1);
+        let user = userList.splice(idx, 1);
+        // console.log(user);
         // io.emit('user-list', userList);
-        // console.log(user.name + "님이 로그아웃 했습니다.");
+        console.log(user[idx].user_data.id + "님이 로그아웃 했습니다.");
+        console.log(userList);
     });
 
     // socket.on('disconnect', ()=>{
