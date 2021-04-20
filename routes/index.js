@@ -25,6 +25,7 @@ const mimeTypes = {
   'mp4': 'video/mp4',
   'json': 'application/json'
 };
+
 router.get('/images/:fileName', function (req, res, next) {
   // __dirname.split('router')[0] + 'public/uploads/images/' + req.params.fileName
   let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg

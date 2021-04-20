@@ -15,6 +15,7 @@ dotenv.config();
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
+const groupRouter = require('./routes/group');
 
 const {connect} = require('./models');
 
@@ -58,6 +59,8 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/auth', authRouter);
+app.use('/group', groupRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

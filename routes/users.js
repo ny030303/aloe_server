@@ -1,6 +1,5 @@
 const express = require('express');
 const iconv = require('iconv-lite');
-const User = require('../models/user');
 const {db} = require('../models');
 const fs = require('fs');
 
