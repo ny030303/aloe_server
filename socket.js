@@ -46,16 +46,25 @@ io.on("connect", socket => {
         console.log(userList);
     });
 
-    socket.on('addGroup', async (data) => {
+    socket.on('addGroup', (data) => {
         let idx = userList.findIndex(x => x.socket_id === socket.id);
 
-        console.log(data, userList[idx]);
+        // console.log(data, userList[idx]);
         db.group.insert({
             "title": data,
             "users": [{'_id': userList[idx].user_data._id, 'name': userList[idx].user_data.name}],
             "contents": []
         });
         socket.emit('addGroup-ok', true);
+    });
+
+    socket.on('show-user-group', async () => {
+        let idx = userList.findIndex(x => x.socket_id === socket.id);
+        // console.log("show-user-group list user: ",userList[idx]);
+
+        let group = await db.group.find({ "users": { $all: [{'_id': userList[idx].user_data._id, 'name': userList[idx].user_data.name}]}} ).toArray();
+        socket.emit('show-user-group-ok', group);
+        // console.log(group);
     });
 
     // socket.on('disconnect', ()=>{
