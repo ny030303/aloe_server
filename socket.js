@@ -13,23 +13,12 @@ const io  = require('socket.io')(server, {
 // const io = socket(server);
 
 let userList = []; //로그인한 유저들을 저장하는 배열
-let connectSocket;
 io.on("connect", socket => {
     console.log(socket.id + " 연결");
-    connectSocket = socket;
-    socket.on('login-check', data => {
-       console.log(userList);
-        let idx = -1;
-        if(userList.length > 0 && data.id) idx = userList.findIndex(x => x.user_data.id === data.id);
-        if(idx < 0) return;
-        userList.forEach((v, i) => {
-            if(i === idx) v.socket_id = socket.id;
-        });
-        socket.emit('login-ok', {socket_id:socket.id, user_data:data});
-
-    });
+  
 
     socket.on('login', data => {
+        // session 값이 있는 클라이언트 or login 유저를 list에 넣는다.
         userList.push({socket_id:socket.id, user_data:data});
         socket.emit('login-ok', {socket_id:socket.id, user_data:data});
         console.log(userList);
@@ -67,13 +56,14 @@ io.on("connect", socket => {
         // console.log(group);
     });
 
-    // socket.on('disconnect', ()=>{
-    //     let idx = userList.findIndex(x => x.socket_id === data.socket_id);
-    //     if(idx < 0) return;
-    //     let user = userList.splice(idx, 1);
-    //     // io.emit('user-list', userList);
-    //     console.log(user.name + "님이 접속을 종료했습니다.");
-    // });
+    socket.on('disconnect', ()=>{
+        let idx = userList.findIndex(x => x.socket_id === socket.id);
+        if(idx < 0) return;
+        console.log(userList[idx].user_data.name + " 새로고침"); // 새로고침 하면 list에서 지운다.
+        let user = userList.splice(idx, 1);
+        // io.emit('user-list', userList);
+        
+    });
 
     // socket.on('chat msg', data => {
     //     let sendUser = userList.find(x => x.id === socket.id);
