@@ -47,6 +47,15 @@ io.on("connect", socket => {
         socket.emit('addGroup-ok', true);
     });
 
+    socket.on('group-user-write',(data) => {
+        let idx = userList.findIndex(x => x.socket_id === socket.id);
+
+        // db.group.update(
+        //     { _id: 1 },
+        //     { $addToSet: { contents: {'name': userList[idx].user_data.name, 'texts': data.texts, } } }
+        //  );
+    });
+
     socket.on('show-user-group', async () => {
         let idx = userList.findIndex(x => x.socket_id === socket.id);
         // console.log("show-user-group list user: ",userList[idx]);
@@ -65,10 +74,10 @@ io.on("connect", socket => {
         
     });
 
-    // socket.on('chat msg', data => {
-    //     let sendUser = userList.find(x => x.id === socket.id);
-    //     io.emit('awesome', {user: sendUser, msg: data});
-    // });
+    socket.on('chat msg', data => {
+        let sendUser = userList.find(x => x.id === socket.id);
+        io.emit('awesome', {user: sendUser, msg: data});
+    });
 });
 
 module.exports = {userList};
