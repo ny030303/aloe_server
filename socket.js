@@ -1,6 +1,6 @@
 const server = require('./server');
 const {db} = require('./models');
-
+const { ObjectId } = require('mongodb');
 const io  = require('socket.io')(server, {
     cors: {
     //   origin: "http://localhost:3000",
@@ -35,33 +35,58 @@ io.on("connect", socket => {
         console.log(userList);
     });
 
-    socket.on('addGroup', (data) => {
+    socket.on('add-group', (data) => {
         let idx = userList.findIndex(x => x.socket_id === socket.id);
 
         // console.log(data, userList[idx]);
         db.group.insert({
             "title": data,
-            "users": [{'_id': userList[idx].user_data._id, 'name': userList[idx].user_data.name}],
+            "users": [{'_id': new ObjectId(userList[idx].user_data._id), 'profileURL': userList[idx].user_data.profileURL, 'name': userList[idx].user_data.name}],
             "contents": []
         });
-        socket.emit('addGroup-ok', true);
+        socket.emit('add-group-ok', true);
     });
 
-    socket.on('group-user-write',(data) => {
+    socket.on('write-message', async (data) => {
+        //  group.. {_id: "", massage: ""}
         let idx = userList.findIndex(x => x.socket_id === socket.id);
 
-        // db.group.update(
-        //     { _id: 1 },
-        //     { $addToSet: { contents: {'name': userList[idx].user_data.name, 'texts': data.texts, } } }
-        //  );
+        await db.group.update(
+            { _id: data._id },
+            { $addToSet: { 
+                contents: {
+                    'user_id': userList[idx].user_data._id,
+                    'created': new Date().toISOString(),
+                    'message': data.message
+                } 
+            } }
+        );
+        var o_id = new ObjectId(data._id);
+        let g = await db.group.findOne({ "_id": o_id});
+
+         socket.emit('new-message', {_id: userList[idx].user_data._id, users: g.users});
     });
+    socket.on('show-a-group', async (id) => {
+        let idx = userList.findIndex(x => x.socket_id === socket.id);
+        var o_id = new ObjectId(id);
+        let g = await db.group.findOne({ "_id": o_id});
+        console.log(g);
+        socket.emit('show-a-group-ok', g);
+    })
 
     socket.on('show-user-group', async () => {
         let idx = userList.findIndex(x => x.socket_id === socket.id);
-        // console.log("show-user-group list user: ",userList[idx]);
-
-        let group = await db.group.find({ "users": { $all: [{'_id': userList[idx].user_data._id, 'name': userList[idx].user_data.name}]}} ).toArray();
-        socket.emit('show-user-group-ok', group);
+        console.log(userList[idx].user_data._id, userList[idx].user_data);
+        let g = await db.group.find({ 
+            "users": { 
+            $all: [{
+                '_id': new ObjectId(userList[idx].user_data._id),
+                'profileURL': userList[idx].user_data.profileURL,
+                'name': userList[idx].user_data.name
+            }]
+        }} ).toArray();
+        console.log(g);
+        socket.emit('show-user-group-ok', g);
         // console.log(group);
     });
 
@@ -74,10 +99,10 @@ io.on("connect", socket => {
         
     });
 
-    socket.on('chat msg', data => {
-        let sendUser = userList.find(x => x.id === socket.id);
-        io.emit('awesome', {user: sendUser, msg: data});
-    });
+    // socket.on('chat msg', data => {
+    //     let sendUser = userList.find(x => x.id === socket.id);
+    //     io.emit('awesome', {user: sendUser, msg: data});
+    // });
 });
 
 module.exports = {userList};
