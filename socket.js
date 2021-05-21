@@ -50,25 +50,28 @@ io.on("connect", socket => {
     socket.on('write-message', async (data) => {
         //  group.. {_id: "", massage: ""}
         let idx = userList.findIndex(x => x.socket_id === socket.id);
-
-        await db.group.update(
-            { _id: data._id },
-            { $addToSet: { 
-                contents: {
-                    'user_id': userList[idx].user_data._id,
+        let g_id = new ObjectId(data._id);
+        // console.log("write-message: " + o_id);
+        //와됐따 ,,,,,,, ㅜㅜㅜㅜㅜㅜ
+        await db.group.updateOne(
+            { "_id": g_id},
+            { "$push": { 
+                "contents": {
+                    'user_id': new ObjectId(userList[idx].user_data._id),
                     'created': new Date().toISOString(),
                     'message': data.message
                 } 
-            } }
+            }} , {multi: true}
         );
-        var o_id = new ObjectId(data._id);
-        let g = await db.group.findOne({ "_id": o_id});
-
-         socket.emit('new-message', {_id: userList[idx].user_data._id, users: g.users});
+        let groupInfo = await db.group.findOne({ "_id": g_id});
+        console.log(groupInfo);
+        // 특정 소켓 id를 가진 클라이언트에게 new message 남기기 해야함
+        // io.sockets https://itzone.tistory.com/450
+        // socket.emit('new-message', {_id: userList[idx].user_data._id, users: g.users});
     });
     socket.on('show-a-group', async (id) => {
         let idx = userList.findIndex(x => x.socket_id === socket.id);
-        var o_id = new ObjectId(id);
+        let o_id = new ObjectId(id);
         let g = await db.group.findOne({ "_id": o_id});
         console.log(g);
         socket.emit('show-a-group-ok', g);
@@ -76,7 +79,7 @@ io.on("connect", socket => {
 
     socket.on('show-user-group', async () => {
         let idx = userList.findIndex(x => x.socket_id === socket.id);
-        console.log(userList[idx].user_data._id, userList[idx].user_data);
+        // console.log(userList[idx].user_data._id, userList[idx].user_data);
         let g = await db.group.find({ 
             "users": { 
             $all: [{
