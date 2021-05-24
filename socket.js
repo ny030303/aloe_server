@@ -53,18 +53,29 @@ io.on("connect", socket => {
         let g_id = new ObjectId(data._id);
         // console.log("write-message: " + o_id);
         //와됐따 ,,,,,,, ㅜㅜㅜㅜㅜㅜ
+        let msgData = {
+            'user_id': new ObjectId(userList[idx].user_data._id),
+            'created': new Date().toISOString(),
+            'message': data.message
+        };
         await db.group.updateOne(
             { "_id": g_id},
             { "$push": { 
-                "contents": {
-                    'user_id': new ObjectId(userList[idx].user_data._id),
-                    'created': new Date().toISOString(),
-                    'message': data.message
-                } 
+                "contents": msgData
             }} , {multi: true}
         );
         let groupInfo = await db.group.findOne({ "_id": g_id});
         console.log(groupInfo);
+
+        userList.forEach(val1 => {
+            groupInfo.users.forEach(val2 => {
+                console.log(val1.socket_id);
+                if(val1.user_data._id == val2._id) {
+                    console.log("val1.user_data._id == val2._id: ", val1.user_data._id , ", ", val2._id);
+                    io.to(val1.socket_id).emit('new-message', {_id: data._id, message: msgData});
+                }
+            });
+        });
         // 특정 소켓 id를 가진 클라이언트에게 new message 남기기 해야함
         // io.sockets https://itzone.tistory.com/450
         // socket.emit('new-message', {_id: userList[idx].user_data._id, users: g.users});
