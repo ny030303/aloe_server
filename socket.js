@@ -58,6 +58,7 @@ io.on("connect", socket => {
             'created': new Date().toISOString(),
             'message': data.message
         };
+        
         await db.group.updateOne(
             { "_id": g_id},
             { "$push": { 
