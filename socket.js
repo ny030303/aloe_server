@@ -31,7 +31,7 @@ io.on("connect", socket => {
         
         let user = userList.splice(idx, 1);
         // io.emit('user-list', userList);
-        console.log(user[idx].user_data.id + "님이 로그아웃 했습니다.");
+        // console.log(user[idx].user_data.id + "님이 로그아웃 했습니다.");
         console.log(userList);
     });
 
