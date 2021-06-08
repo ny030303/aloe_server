@@ -28,6 +28,9 @@ router.post('/invite', async (req, res, next) => {
         console.log(updateRes.modifiedCount);
         if(updateRes.modifiedCount > 0) {
             res.json({result: 1, msg: "그룹에 초대됐습니다."});
+            
+            const {newUser} = require('../socket');
+            newUser(obg_id, addUser);
         } else {
             res.json({result: 0, msg: "이미 소속된 그룹입니다."});
         }
