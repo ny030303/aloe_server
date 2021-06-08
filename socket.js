@@ -118,6 +118,26 @@ io.on("connect", socket => {
     //     let sendUser = userList.find(x => x.id === socket.id);
     //     io.emit('awesome', {user: sendUser, msg: data});
     // });
+
+    module.exports.newUser = async function newUser() {
+        console.log("--newUser function--");
+        try {
+            let groupInfo = await db.group.findOne({ "_id": g_id});
+            console.log(groupInfo);
+            userList.forEach(val1 => {
+                groupInfo.users.forEach(val2 => {
+                    console.log(val1.socket_id);
+                    if(val1.user_data._id == val2._id) {
+                        // console.log("val1.user_data._id == val2._id: ", val1.user_data._id , ", ", val2._id);
+                        io.to(val1.socket_id).emit('new-user', {_id: data._id, user: addUser});
+                    }
+                });
+            });
+        } catch (error) {
+            console.log(error);
+        }
+        
+    }
 });
 
 module.exports = {userList};

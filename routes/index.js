@@ -30,14 +30,19 @@ router.get('/images/:fileName', function (req, res, next) {
   // __dirname.split('router')[0] + 'public/uploads/images/' + req.params.fileName
   let extname = String(req.params.fileName.split('.')[1].toLowerCase()); // ex. jpg, jpeg
   let contentType = mimeTypes[extname];
-  fs.readFile('public/uploads/images/' + req.params.fileName, function (err, result) {
-    if (err) {
-      res.next(err);
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(result, 'utf-8');
-    }
-  });
+  try {
+    fs.readFile('public/uploads/images/' + req.params.fileName, function (err, result) {
+      if (err) {
+        res.json(err);
+      } else {
+        res.writeHead(200, { 'Content-Type': contentType });
+        res.end(result, 'utf-8');
+      }
+    });
+  } catch (error) {
+    
+  }
+  
 
 });
 
