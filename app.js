@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET, { sameSite: "none", secure: true }));
 app.use(session({
   resave: false,
   saveUninitialized: false,
